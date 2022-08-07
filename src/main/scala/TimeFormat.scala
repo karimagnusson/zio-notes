@@ -1,6 +1,6 @@
 package io.github.karimagnusson.zio.notes
 
-import java.time.{Instant, LocalDateTime, ZoneOffset}
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
@@ -11,17 +11,11 @@ private object TimeFormat {
 
 
 private trait TimeFormat {
-  def render(timestamp: Instant): String
+  def now: String
 }
 
 
 private class TimeFormatImpl(format: String) extends TimeFormat {
-
   val formatter = DateTimeFormatter.ofPattern(format)
-
-  def render(timestamp: Instant): String = {
-    formatter.format(
-      LocalDateTime.ofInstant(timestamp, ZoneOffset.UTC)
-    )
-  }
+  def now: String = formatter.format(LocalDateTime.now)
 }

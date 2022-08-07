@@ -6,11 +6,8 @@ import zio.blocking._
 
 
 private object NoteWriter {
-  
-  def apply(dir: String, format: String): NoteWriter =
-    new NoteWriterImpl(dir, format)
 
-  def effect(dir: String, format: String): RIO[Blocking, NoteWriter] = for {
+  def create(dir: String, format: String): RIO[Blocking, NoteWriter] = for {
     writer  <- Task.effect(new NoteWriterImpl(dir, format))
     _       <- writer.createFreshFiles
   } yield writer
@@ -37,25 +34,25 @@ private class NoteWriterImpl(dir: String, format: String) extends NoteWriter {
   }
   
   def write(note: NoteType): RIO[Blocking, Unit] = note match {
-    case InfoNote(time, owner, text) => for {
-      iso   <- Task.effect(timeFormat.render(time))
-      line  <- makeLine(iso, owner, text)
+    case InfoNote(owner, text) => for {
+      time  <- Task.effect(timeFormat.now)
+      line  <- makeLine(time, owner, text)
       _     <- manInfo.write(line)
     } yield ()
-    case WarnNote(time, owner, text) => for {
-      iso   <- Task.effect(timeFormat.render(time))
-      line  <- makeLine(iso, owner, text)
+    case WarnNote(owner, text) => for {
+      time  <- Task.effect(timeFormat.now)
+      line  <- makeLine(time, owner, text)
       _     <- manWarn.write(line)
     } yield ()
-    case ErrorNote(time, owner, th) => for {
-      iso   <- Task.effect(timeFormat.render(time))
+    case ErrorNote(owner, th) => for {
+      time  <- Task.effect(timeFormat.now)
       trace <- Task.effect(Stacktrace.render(th))
-      line  <- makeLine(iso, owner, trace)
+      line  <- makeLine(time, owner, trace)
       _     <- manError.write(line)
     } yield ()
-    case DebugNote(time, owner, text) => for {
-      iso   <- Task.effect(timeFormat.render(time))
-      line  <- makeLine(iso, owner, text)
+    case DebugNote(owner, text) => for {
+      time  <- Task.effect(timeFormat.now)
+      line  <- makeLine(time, owner, text)
       _     <- manDebug.write(line)
     } yield ()
   }

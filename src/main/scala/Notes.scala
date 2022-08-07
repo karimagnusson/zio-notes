@@ -1,10 +1,7 @@
 package io.github.karimagnusson.zio.notes
 
-import java.time.Instant
 import zio._
 import zio.blocking._
-
-
 
 
 object Notes {
@@ -24,7 +21,7 @@ object Notes {
 
   private def create(dir: String): RIO[Blocking, Notes] = {
     for {
-      writer <- NoteWriter.effect(dir, format)
+      writer <- NoteWriter.create(dir, format)
       queue  <- Queue.unbounded[NoteType]
       loop    = for {
         note   <- queue.take
@@ -58,20 +55,20 @@ private class NotesImpl(
   ) extends Notes {
 
   def addInfo(owner: String, text: String): UIO[Unit] = for {
-    _ <- queue.offer(InfoNote(Instant.now, owner, text))
+    _ <- queue.offer(InfoNote(owner, text))
   } yield ()
 
   def addWarn(owner: String, text: String): UIO[Unit] = for {
-    _ <- queue.offer(WarnNote(Instant.now, owner, text))
+    _ <- queue.offer(WarnNote(owner, text))
   } yield ()
 
   def addError(owner: String, th: Throwable): UIO[Unit] = for {
-    _ <- queue.offer(ErrorNote(Instant.now, owner, th))
+    _ <- queue.offer(ErrorNote(owner, th))
   } yield ()
 
   def addDebug(owner: String, text: String): UIO[Unit] = {
     if (debug)
-      queue.offer(DebugNote(Instant.now, owner, text)).map(_ => ())
+      queue.offer(DebugNote(owner, text)).map(_ => ())
     else
       ZIO.succeed(())
   }

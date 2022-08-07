@@ -1,6 +1,11 @@
 # zio-notes
 
-Zio-notes is a light-weight logging library. 
+zio-notes is a simple logging library. It is easy to set up and needs minimal config. On startup the log files are created. If they exist, they are first deleted. The log entry is handled in a different fiber so your code does not have to wait until the entry is written to the file.
+
+#### Sbt
+```sbt
+libraryDependencies += "io.github.karimagnusson" % "zio-notes" % "0.9.0"
+```
 
 #### Example
 ```scala
@@ -16,7 +21,7 @@ object Example extends zio.App {
     _ <- note.error(new Exception("Something went wrong"))
   } yield ()
 
-  val notesLayer = Notes.layer(dir)
+  val notesLayer = Notes.layer("/path/to/my/project/notes")
 
   override def run(args: List[String]): ZIO[ZEnv, Nothing, ExitCode] = {
     job.provideCustomLayer(notesLayer).exitCode
@@ -29,12 +34,11 @@ You can turn off logging for debug and change the time format.
 ```scala
 Notes.setDebug(false) // default: true
 Notes.setTimeFormat("yyyy-MM-dd HH:mm:ss.SSS") // default: dd.MM.yyyy HH:mm:ss.SSS
-val notesLayer = Notes.layer(dir)
+val notesLayer = Notes.layer("/path/to/my/project/notes")
 ```
 
-
 #### SelfNotes
-If you wish to know wich class was responsible for a certain log entry, you can extend your class with the SelfNotes trait.
+If you wish to know which class was responsible for a certain log entry, you can extend your class with the SelfNotes trait.
 ```scala
 class MyClass extends SelfNotes {
   val job = for {
