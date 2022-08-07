@@ -1,6 +1,5 @@
 package io.github.karimagnusson.zio.notes
 
-import java.nio.file.{Path, Paths}
 import java.time.Instant
 import zio._
 import zio.blocking._
@@ -52,12 +51,12 @@ private class NoteWriterImpl(dir: String, format: String) extends NoteWriter {
       iso   <- Task.effect(timeFormat.render(time))
       trace <- Task.effect(Stacktrace.render(th))
       line  <- makeLine(iso, owner, trace)
-      _     <- manInfo.write(line)
+      _     <- manError.write(line)
     } yield ()
     case DebugNote(time, owner, text) => for {
       iso   <- Task.effect(timeFormat.render(time))
       line  <- makeLine(iso, owner, text)
-      _     <- manInfo.write(line)
+      _     <- manDebug.write(line)
     } yield ()
   }
 

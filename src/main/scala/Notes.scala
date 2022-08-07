@@ -5,15 +5,24 @@ import zio._
 import zio.blocking._
 
 
+
+
 object Notes {
+
+  private var debug = true
+  private var format = "dd.MM.yyyy HH:mm:ss.SSS"
+
+  def setDebug(value: Boolean): Unit = {
+    debug = value
+  }
+
+  def setTimeFormat(value: String): Unit = {
+    format = value
+  }
 
   def forOwner(owner: String) = new NotesApi(owner)
 
-  private def create(
-    dir: String,
-    debug: Boolean,
-    format: String
-  ): RIO[Blocking, Notes] = {
+  private def create(dir: String): RIO[Blocking, Notes] = {
     for {
       writer <- NoteWriter.effect(dir, format)
       queue  <- Queue.unbounded[NoteType]
@@ -25,12 +34,8 @@ object Notes {
     } yield new NotesImpl(queue, fiber, debug)
   }
 
-  def layer(
-    dir: String,
-    debug: Boolean = true,
-    format: String = "dd.MM.yyyy HH:mm:ss.SSS"
-   ): ZLayer[Blocking, Throwable, Has[Notes]] = {    
-    ZLayer.fromAcquireRelease(create(dir, debug, format))(_.close)
+  def layer(dir: String): ZLayer[Blocking, Throwable, Has[Notes]] = {    
+    ZLayer.fromAcquireRelease(create(dir))(_.close)
   }
 
   def get = ZIO.access[Has[Notes]](_.get)
