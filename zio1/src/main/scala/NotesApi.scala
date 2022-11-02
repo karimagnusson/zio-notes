@@ -21,31 +21,38 @@ import zio._
 
 private[notes] class NotesApi(owner: String) {
 
-  def info[R](text: String): RIO[Has[Notes], Unit] = {
+  def info[R](text: String): URIO[Has[Notes], Unit] = {
     for {
       notes <- Notes.get
       _     <- notes.addInfo(owner, text)
     } yield ()
   }
 
-  def warn[R](text: String): RIO[Has[Notes], Unit] = {
+  def warn[R](text: String): URIO[Has[Notes], Unit] = {
     for {
       notes <- Notes.get
       _     <- notes.addWarn(owner, text)
     } yield ()
   }
 
-  def error[R](th: Throwable): RIO[Has[Notes], Unit] = {
+  def error[R](th: Throwable): URIO[Has[Notes], Unit] = {
     for {
       notes <- Notes.get
       _     <- notes.addError(owner, th)
     } yield ()
   }
 
-  def debug[R](text: String): RIO[Has[Notes], Unit] = {
+  def debug[R](text: String): URIO[Has[Notes], Unit] = {
     for {
       notes <- Notes.get
       _     <- notes.addDebug(owner, text)
+    } yield ()
+  }
+
+  def print[R](obj: Any): URIO[Has[Notes], Unit] = {
+    for {
+      notes <- Notes.get
+      _     <- notes.addPrint(owner, obj)
     } yield ()
   }
 }

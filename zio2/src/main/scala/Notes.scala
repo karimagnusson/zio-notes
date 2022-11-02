@@ -17,7 +17,6 @@
 package io.github.karimagnusson.zio.notes
 
 import zio._
-import zio.blocking._
 
 
 object Notes {
@@ -35,40 +34,31 @@ object Notes {
 
   def forOwner(owner: String) = new NotesApi(owner)
 
-  private def create(dir: String): RIO[Blocking, Notes] = {
+  private def create(dir: String): RIO[Any, Notes] = {
     for {
-      writer <- NoteWriter.create(dir, format)
-      queue  <- Queue.unbounded[NoteType]
-      loop    = for {
-        note   <- queue.take
-        line   <- writer.write(note)
+      writer  <- NoteWriter.create(dir, format)
+      queue   <- Queue.unbounded[NoteType]
+      loop     = for {
+        note    <- queue.take
+        line    <- writer.write(note)
       } yield ()
-      fiber  <- loop.forever.fork
-    } yield new NotesImpl(queue, fiber, debug)
+      fiber   <- loop.forever.fork
+    } yield new Notes(queue, fiber, debug)
   }
 
-  def layer(dir: String): ZLayer[Blocking, Throwable, Has[Notes]] = {    
-    ZLayer.fromAcquireRelease(create(dir))(_.close)
+  def layer(dir: String): ZLayer[Any, Throwable, Notes] = {    
+    ZLayer.scoped(ZIO.acquireRelease(create(dir))(_.close))
   }
 
-  def get = ZIO.access[Has[Notes]](_.get)
+  def get = ZIO.service[Notes]
 }
 
 
-trait Notes {
-  def addInfo(owner: String, text: String): UIO[Unit]
-  def addWarn(owner: String, text: String): UIO[Unit]
-  def addError(owner: String, th: Throwable): UIO[Unit]
-  def addDebug(owner: String, text: String): UIO[Unit]
-  def close: UIO[Unit]
-}
-
-
-private class NotesImpl(
-    queue: Queue[NoteType],
-    fiber: Fiber.Runtime[Any, Unit],
-    debug: Boolean
-  ) extends Notes {
+class Notes(
+  queue: Queue[NoteType],
+  fiber: Fiber.Runtime[Any, Unit],
+  debug: Boolean
+) {
 
   def addInfo(owner: String, text: String): UIO[Unit] = for {
     _ <- queue.offer(InfoNote(owner, text))
@@ -85,6 +75,13 @@ private class NotesImpl(
   def addDebug(owner: String, text: String): UIO[Unit] = {
     if (debug)
       queue.offer(DebugNote(owner, text)).map(_ => ())
+    else
+      ZIO.succeed(())
+  }
+
+  def addPrint(owner: String, obj: Any): UIO[Unit] = {
+    if (debug)
+      queue.offer(PrintNote(owner, obj)).map(_ => ())
     else
       ZIO.succeed(())
   }

@@ -16,25 +16,22 @@
 
 package io.github.karimagnusson.zio.notes
 
+import java.io.{PrintWriter, CharArrayWriter}
 
-private sealed trait NoteType
 
-private case class InfoNote(
-  owner: String,
-  text: String
-) extends NoteType
+private object Stacktrace {
 
-private case class WarnNote(
-  owner: String,
-  text: String
-) extends NoteType
+  val wrapThrowable: Throwable => Exception = {
+    case ex: Exception => ex
+    case th: Throwable => new Exception(th)
+  }
 
-private case class ErrorNote(
-  owner: String,
-  th: Throwable
-) extends NoteType
-
-private case class DebugNote(
-  owner: String,
-  text: String
-) extends NoteType
+  def render(th: Throwable) = {
+    val ex = wrapThrowable(th)
+    val cw = new CharArrayWriter()
+    val pw = new PrintWriter(cw)
+    ex.printStackTrace(pw)
+    pw.close()
+    cw.toString
+  }
+}

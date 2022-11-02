@@ -19,42 +19,44 @@ package io.github.karimagnusson.zio.notes
 import java.io.{File, FileWriter}
 import java.nio.file.{Path, Paths}
 import zio._
-import zio.blocking._
 
 
-private object ManagedWriter {
-
-  def apply(file: File): ManagedWriter =
-    new ManagedWriterImpl(file)
-
-  def fromPath(path: Path): ManagedWriter =
-    apply(path.toFile)
-
-  def fromDir(dir: String, name: String): ManagedWriter =
-    fromPath(Paths.get(dir, name))
-}
-
-trait ManagedWriter {
-  def write(line: String): RIO[Blocking, Unit]
-  def createFresh: RIO[Blocking, Unit]
+private object LineWriter {
+  def apply(dir: String, name: String) =
+    new LineWriter(Paths.get(dir, name).toFile)
 }
 
 
-private class ManagedWriterImpl(file: File) extends ManagedWriter {
+private class LineWriter(file: File) {
 
-  val man = Managed.fromAutoCloseable(
-    ZIO.effectTotal(
-      new FileWriter(file, true)
-    )
-  )
-
-  def write(line: String): RIO[Blocking, Unit] = {
-    man.use(writer => effectBlocking(writer.write(line)))
+  def write(line: String): RIO[Any, Unit] = ZIO.attemptBlocking {
+    val handle = new FileWriter(file, true)
+    handle.write(line)
+    handle.close()
   }
 
-  def createFresh: RIO[Blocking, Unit] = effectBlocking {
+  def createFresh: RIO[Any, Unit] = ZIO.attemptBlocking {
     if (file.exists)
       file.delete()
     file.createNewFile()
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

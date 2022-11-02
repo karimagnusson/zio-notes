@@ -1,11 +1,11 @@
-name := "zio-notes"
+name := "zio-2-notes"
 
 organization := "io.github.karimagnusson"
 
-version := "0.9.0"
+version := "2.0.1"
 
 scalaVersion := "2.13.8"
 
 libraryDependencies ++= Seq(
-  "dev.zio" %% "zio" % "1.0.16"
+  "dev.zio" %% "zio" % "2.0.0"
 )
