@@ -20,7 +20,7 @@ object Example extends zio.App {
     _ <- note.warn("Something is about to go wrong")
     _ <- note.error(new Exception("Something went wrong"))
     _ <- note.print("Of interest")
-    _ <- note.print(new Exception("well ..."))
+    _ <- note.print(new Exception("Well ..."))
   } yield ()
 
   val notesLayer = Notes.layer("/path/to/my/project/notes")
@@ -46,6 +46,16 @@ If you wish to know which class was responsible for a certain log entry, you can
 class MyClass extends SelfNotes {
   val job = for {
     _ <- note.info("App has started") // 07.08.2022 07:09:38.484 [MyClass] App has started
+  } yield ()
+}
+```
+
+#### Custom owner
+```scala
+object Example extends zio.App {
+  val note = Notes.forOwner("Example")
+  val job = for {
+    _ <- note.info("App has started") // 07.08.2022 07:09:38.484 [Example] App has started
   } yield ()
 }
 ```
