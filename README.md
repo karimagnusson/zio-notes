@@ -7,6 +7,15 @@ Availavle for ZIO 1 and ZIO 2.
 note.print takes Any. If a Throwable is passed, the stacktrace is printed and if it is an object, toString is called on it.
 
 
+#### Sbt
+```sbt
+// compiled for Scala 2.13.8 and ZIO 1.0.18
+libraryDependencies += "io.github.karimagnusson" % "zio-notes" % "1.0.0"
+
+// compiled for Scala 2.13.8 and ZIO 2.0.12
+libraryDependencies += "io.github.karimagnusson" % "zio-notes" % "2.0.0"
+```
+
 #### Example
 ```scala
 import zio._
