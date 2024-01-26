@@ -9,11 +9,13 @@ note.print takes Any. If a Throwable is passed, the stacktrace is printed and if
 
 #### Sbt
 ```sbt
-// compiled for Scala 2.13.8 and ZIO 1.0.18
-libraryDependencies += "io.github.karimagnusson" % "zio-notes" % "1.0.0"
+// available for Scala 2.12, 2.13 and 3
 
-// compiled for Scala 2.13.8 and ZIO 2.0.12
-libraryDependencies += "io.github.karimagnusson" % "zio-notes" % "2.0.0"
+// for ZIO 1
+libraryDependencies += "io.github.karimagnusson" % "zio-notes" % "1.0.1"
+
+// for ZIO 2
+libraryDependencies += "io.github.karimagnusson" % "zio-notes" % "2.0.1"
 ```
 
 #### Example
