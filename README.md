@@ -1,3 +1,5 @@
+[![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/bukotsunikki.svg?style=social&label=Follow%20%40kuzminki_lib)](https://twitter.com/kuzminki_lib)
+
 # zio-notes
 
 zio-notes is a simple logging library. It is easy to set up and needs minimal config. On startup the log files are created. If they exist, they are first deleted. The log entry is handled in a different fiber so your code does not have to wait until the entry is written to the file.
