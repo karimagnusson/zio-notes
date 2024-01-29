@@ -4,10 +4,7 @@
 
 zio-notes is a simple logging library. It is easy to set up and needs minimal config. On startup the log files are created. If they exist, they are first deleted. The log entry is handled in a different fiber so your code does not have to wait until the entry is written to the file.
 
-Availavle for ZIO 1 and ZIO 2.
-
-note.print takes Any. If a Throwable is passed, the stacktrace is printed and if it is an object, toString is called on it.
-
+You might also be interested in [zio-path](https://github.com/karimagnusson/zio-path).
 
 #### Sbt
 ```sbt
@@ -19,6 +16,8 @@ libraryDependencies += "io.github.karimagnusson" % "zio-notes" % "1.0.1"
 // for ZIO 2
 libraryDependencies += "io.github.karimagnusson" % "zio-notes" % "2.0.1"
 ```
+
+note.print takes Any. If a Throwable is passed, the stacktrace is printed and if it is an object, toString is called on it.
 
 #### Example
 ```scala
