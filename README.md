@@ -17,8 +17,6 @@ libraryDependencies += "io.github.karimagnusson" % "zio-notes" % "1.0.1"
 libraryDependencies += "io.github.karimagnusson" % "zio-notes" % "2.0.1"
 ```
 
-note.print takes Any. If a Throwable is passed, the stacktrace is printed and if it is an object, toString is called on it.
-
 #### Example
 ```scala
 import zio._
@@ -41,6 +39,8 @@ object Example extends zio.App {
     job.provideCustomLayer(notesLayer).exitCode
   }
 }
+
+// note.print takes Any. If a Throwable is passed, the stacktrace is printed and if it is an object, toString is called on it.
 ```
 
 #### Settings
