@@ -40,7 +40,9 @@ object Example extends zio.App {
   }
 }
 
-// note.print takes Any. If a Throwable is passed, the stacktrace is printed and if it is an object, toString is called on it.
+// note.print takes Any. If a Throwable is passed,
+// the stacktrace is printed and if it is an object,
+// toString is called on it.
 ```
 
 #### Settings
